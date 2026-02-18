@@ -1,0 +1,15 @@
+target/
+.idea/
+*.class
+*.pyc
+
+# Python
+.venv/
+__pycache__/
+
+# Scala/IDE
+.bsp/
+.scala-build/
+
+# OS
+.DS_Store
