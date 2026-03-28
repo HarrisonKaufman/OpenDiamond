@@ -3,10 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; font-src 'self' cdn.jsdelivr.net; connect-src 'self' statsapi.mlb.com localhost:*; img-src 'self' data:; frame-ancestors 'none'">
   <title>OpenDiamond - Teams</title>
   <link rel="icon" href="/pages/resources/baseball-diamond.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link href="/css/styles.css" rel="stylesheet">
+  <style>
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .league-section {
+      margin-bottom: 60px;
+    }
+
+    .league-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #1a1a1a;
+      border-bottom: 3px solid #007bff;
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+
+    .team-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 32px 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .team-card:hover {
+      border-color: #007bff;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .team-card:active {
+      transform: translateY(0);
+    }
+
+    .team-location {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .team-name {
+      font-family: 'Boldonse', sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: #007bff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.3;
+    }
+
+    @media (max-width: 768px) {
+      .teams-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .team-card {
+        padding: 24px 16px;
+        min-height: 160px;
+      }
+
+      .team-name {
+        font-size: 18px;
+      }
+
+      .team-location {
+        font-size: 12px;
+      }
+    }
+
+    .back-to-teams {
+      margin-bottom: 20px;
+    }
+
+    .back-to-teams a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-to-teams a:hover {
+      text-decoration: underline;
+    }
+
+    .roster-section thead {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .roster-section th {
+      color: #333;
+      font-weight: 600;
+      padding: 12px;
+    }
+
+    body.dark-mode .roster-section thead {
+      background-color: #1f1f1f;
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .roster-section th {
+      color: #b0b0b0;
+    }
+
+    .section-header {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #dee2e6;
+      padding: 12px 16px;
+    }
+
+    .section-header h5 {
+      color: #333;
+      margin: 0;
+    }
+
+    body.dark-mode .section-header {
+      background-color: #1f1f1f;
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .section-header h5 {
+      color: #b0b0b0;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
@@ -29,6 +173,11 @@
           <li class="nav-item">
             <a class="nav-link active" href="/teams">TEAMS</a>
           </li>
+          <li class="nav-item">
+            <button id="darkModeToggle" class="btn btn-link nav-link" style="border: none; background: none; cursor: pointer; padding: 0.5rem;">
+              <i class="bi bi-moon-fill"></i>
+            </button>
+          </li>
         </ul>
       </div>
     </div>
@@ -36,17 +185,242 @@
 
   <div class="page-content">
     <div class="container mt-5">
-      <div class="text-center py-5">
+      <div id="teamsLandingView">
         <h1 class="display-5 fw-bold mb-3">Teams</h1>
-        <p class="lead text-muted mb-4">Team information coming soon...</p>
+        <p class="subtitle">Select a team to view roster, statistics, and franchise history</p>
+
+        <div id="teamsContainer">
+          <div class="loading" style="text-align: center; padding: 60px 20px; color: #666; font-size: 18px;">
+            Loading teams...
+          </div>
+        </div>
+        <div id="errorContainer"></div>
+      </div>
+
+      <div id="teamsDetailView" style="display: none;">
+        <div class="back-to-teams">
+          <a href="/teams">&larr; Back to Teams</a>
+        </div>
+
+        <h1 class="display-5 fw-bold mb-4" id="teamTitle" style="font-family: 'Boldonse', sans-serif; text-transform: uppercase;">Loading Team...</h1>
+
+        <select id="teamSelect" class="form-select" style="display: none;">
+          <option value="">Loading teams...</option>
+        </select>
+
+        <div class="team-selector-section mb-4">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="yearSelect" class="form-label">Select Year:</label>
+              <select id="yearSelect" class="form-select" disabled>
+                <option value="">Loading years...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading team data...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage" style="display: none;"></div>
+
+        <div id="teamOverview" style="display: none;">
+          <div class="team-stats-section mb-5">
+            <h3 class="mb-4">Team Overview</h3>
+            <div class="row" id="teamStatsGrid"></div>
+          </div>
+
+          <div class="card mb-5">
+            <div class="section-header">
+              <h5 class="mb-0">Pitching Statistics</h5>
+            </div>
+            <div class="card-body">
+              <div class="row" id="pitchingStatsGrid"></div>
+            </div>
+          </div>
+
+          <div class="card mb-5" id="franchiseHistorySection" style="display: none;">
+            <div class="section-header">
+              <h5 class="mb-0">Franchise History - Wins by Year</h5>
+            </div>
+            <div class="card-body">
+              <div id="historyChartLoading" style="text-align: center; padding: 20px; display: none;">
+                <div class="spinner-border text-primary" role="status" style="margin-right: 10px;">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <span>Loading franchise history...</span>
+              </div>
+              <div id="franchiseHistoryChart" style="width: 100%; height: 400px;"></div>
+            </div>
+          </div>
+
+
+          <div class="roster-section">
+            <div class="mb-5">
+              <h4 class="mb-3">Position Players</h4>
+              <div class="table-responsive">
+                <table class="table table-hover table-striped" id="positionPlayersTable">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Position</th>
+                    </tr>
+                  </thead>
+                  <tbody id="positionPlayersBody">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mb-5">
+              <h4 class="mb-3">Pitchers</h4>
+              <div class="table-responsive">
+                <table class="table table-hover table-striped" id="pitchersTable">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Position</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pitchersBody">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamParam = urlParams.get('team');
+
+    if (teamParam) {
+      document.getElementById('teamsLandingView').style.display = 'none';
+      document.getElementById('teamsDetailView').style.display = 'block';
+      const script = document.createElement('script');
+      script.src = '/js/teams.js';
+      document.body.appendChild(script);
+    } else {
+      loadTeamsGrid();
+    }
+
+    function loadTeamsGrid() {
+      const container = document.getElementById('teamsContainer');
+      const errorContainer = document.getElementById('errorContainer');
+
+      fetch('/api/teams')
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to load teams');
+          return response.json();
+        })
+        .then(data => {
+          if (!data.teams || data.teams.length === 0) {
+            throw new Error('No teams found');
+          }
+
+          const alTeams = [108, 110, 111, 114, 116, 118, 139, 140, 141, 142, 145, 147, 133, 136];
+          
+          const al = [];
+          const nl = [];
+          
+          data.teams.forEach(team => {
+            if (alTeams.includes(team.id)) {
+              al.push(team);
+            } else {
+              nl.push(team);
+            }
+          });
+
+          container.innerHTML = '';
+          
+          const alSection = document.createElement('div');
+          alSection.className = 'league-section';
+          const alTitle = document.createElement('div');
+          alTitle.className = 'league-title';
+          alTitle.textContent = 'American League';
+          alSection.appendChild(alTitle);
+          
+          const alGrid = document.createElement('div');
+          alGrid.className = 'teams-grid';
+          al.forEach(team => {
+            alGrid.appendChild(createTeamCard(team));
+          });
+          alSection.appendChild(alGrid);
+          container.appendChild(alSection);
+          
+          const nlSection = document.createElement('div');
+          nlSection.className = 'league-section';
+          const nlTitle = document.createElement('div');
+          nlTitle.className = 'league-title';
+          nlTitle.textContent = 'National League';
+          nlSection.appendChild(nlTitle);
+          
+          const nlGrid = document.createElement('div');
+          nlGrid.className = 'teams-grid';
+          nl.forEach(team => {
+            nlGrid.appendChild(createTeamCard(team));
+          });
+          nlSection.appendChild(nlGrid);
+          container.appendChild(nlSection);
+        })
+        .catch(error => {
+          console.error('Error loading teams:', error);
+          errorContainer.innerHTML = `<div style="background-color: #ffebee; color: #d32f2f; padding: 16px; border-radius: 6px;">Error loading teams: ${error.message}</div>`;
+          container.innerHTML = '';
+        });
+    }
+
+    function createTeamCard(team) {
+      const card = document.createElement('a');
+      card.href = `/teams?team=${team.id}`;
+      card.className = 'team-card';
+      let cardHTML = '';
+      
+      const twoWordTeams = {
+        111: { location: 'Boston', name: 'Red Sox' },
+        145: { location: 'Chicago', name: 'White Sox' },
+        141: { location: 'Toronto', name: 'Blue Jays' }
+      };
+      
+      let locationPart = '';
+      let teamNamePart = '';
+      
+      if (twoWordTeams[team.id]) {
+        locationPart = twoWordTeams[team.id].location;
+        teamNamePart = twoWordTeams[team.id].name;
+      } else {
+        const nameParts = team.name.trim().split(' ');
+        teamNamePart = nameParts[nameParts.length - 1];
+        locationPart = nameParts.slice(0, -1).join(' ');
+      }
+      
+      if (team.id !== 133 && locationPart) {
+        cardHTML += `<div class="team-location">${locationPart}</div>`;
+      }
+      cardHTML += `<div class="team-name">${teamNamePart}</div>`;
+      card.innerHTML = cardHTML;
+      return card;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 
   <footer style="text-align: center; padding: 16px 0; font-size: 0.75rem; color: #999;">
     <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons" style="color: #999; text-decoration: none;">Sports and competition icons created by bearicons - Flaticon</a>
   </footer>
+
+  <script src="/js/darkmode.js"></script>
 </body>
 </html>

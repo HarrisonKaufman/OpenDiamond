@@ -10,7 +10,7 @@ object ShutHandler {
   def registerShutdownHook(system: ActorSystem): Unit = {
     Runtime.getRuntime.addShutdownHook(new Thread() {
       override def run(): Unit = {
-        println("Graceful shutdown initiated :) yay!")
+        println("Graceful shutdown initiated")
         try {
           Await.result(system.terminate(), 10.seconds)
           println("ActorSystem terminated successfully")

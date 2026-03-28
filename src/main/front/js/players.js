@@ -1,3 +1,14 @@
+async function getCsrfToken() {
+  try {
+    const response = await fetch('/api/csrf-token', { method: 'GET' });
+    if (!response.ok) throw new Error('Failed to get CSRF token');
+    const data = await response.json();
+    return data.csrfToken;
+  } catch (err) {
+    throw err;
+  }
+}
+
 function statBox(label, value) {
   const box = document.createElement('div');
   box.className = 'stat-box';
@@ -99,7 +110,6 @@ function displayPlayerInfo(playerName, seasons, position) {
       totalHitsAllowed += s.hitsAllowed || 0;
       gamesPlayed += s.games || 0;
 
-      // Convert baseball IP notation (.1 = 1/3, .2 = 2/3) to real fractions
       const ip = s.inningsPitched || 0;
       const wholeInnings = Math.floor(ip);
       const partial = Math.round((ip - wholeInnings) * 10);
@@ -161,14 +171,20 @@ function send() {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('statsTableContainer').style.display = 'none';
 
-  fetch('/api/player', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'player_season_stats',
-      playerName: playerName
+  getCsrfToken()
+    .then(csrfToken => {
+      return fetch('/api/player', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({
+          action: 'player_season_stats',
+          playerName: playerName
+        })
+      });
     })
-  })
     .then(res => res.json())
     .then(data => {
       document.getElementById('loading').style.display = 'none';
@@ -190,7 +206,6 @@ function send() {
     .catch(err => {
       document.getElementById('loading').style.display = 'none';
       showError(`Error: ${err.message}`);
-      console.error(err);
     });
 }
 

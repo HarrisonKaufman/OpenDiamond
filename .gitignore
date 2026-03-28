@@ -10,6 +10,13 @@ __pycache__/
 # Scala/IDE
 .bsp/
 .scala-build/
+.metals/
 
 # OS
 .DS_Store
+
+.bloop/
+.vscode/
+
+# SBT/Metals build files
+project/

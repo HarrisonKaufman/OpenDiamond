@@ -246,7 +246,6 @@ tbody tr:hover {
   font-weight: bold;
 }
 
-/* Player of the Day card */
 .potd-card {
   max-width: 520px;
   margin: 0 auto 40px;
@@ -295,4 +294,198 @@ tbody tr:hover {
 .potd-btn:hover {
   background: #0056b3;
   transform: translateY(-1px);
+}
+
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+}
+
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .subtitle {
+  color: #b0b0b0;
+}
+
+body.dark-mode input {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #404040;
+}
+
+body.dark-mode input:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.2);
+}
+
+body.dark-mode .chart-card {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .chart-card h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .stats-table {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .stats-table h3 {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  border-bottom-color: #404040;
+}
+
+body.dark-mode thead {
+  background-color: #1f1f1f;
+  border-bottom-color: #404040;
+}
+
+body.dark-mode th {
+  color: #b0b0b0;
+}
+
+body.dark-mode td {
+  color: #d0d0d0;
+  border-bottom-color: #404040;
+}
+
+body.dark-mode tbody tr:hover {
+  background-color: #252525;
+}
+
+body.dark-mode .player-info {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .player-info h2 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .stat-box {
+  background-color: #1f1f1f;
+  color: #d0d0d0;
+}
+
+body.dark-mode .stat-label {
+  color: #a0a0a0;
+}
+
+body.dark-mode .stat-value {
+  color: #4da6ff;
+}
+
+body.dark-mode .potd-card {
+  background-color: #2d2d2d;
+  border-color: #0056b3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #e0e0e0;
+}
+
+body.dark-mode .potd-badge {
+  background-color: rgba(0, 86, 179, 0.2);
+  color: #4da6ff;
+}
+
+body.dark-mode .potd-name {
+  color: #e0e0e0;
+}
+
+body.dark-mode .card {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #404040;
+}
+
+body.dark-mode .card-header {
+  border-bottom-color: #404040;
+}
+
+body.dark-mode .card-body {
+  color: #d0d0d0;
+}
+
+body.dark-mode .row {
+  color: #d0d0d0;
+}
+
+body.dark-mode .error-message {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #ff6b6b;
+}
+
+body.dark-mode .loading {
+  color: #b0b0b0;
+}
+
+body.dark-mode .text-muted {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode .text-primary {
+  color: #4da6ff !important;
+}
+
+body.dark-mode .league-title {
+  color: #e0e0e0;
+  border-bottom-color: #0056b3;
+}
+
+body.dark-mode .team-card {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #d0d0d0;
+}
+
+body.dark-mode .team-card:hover {
+  border-color: #0056b3;
+  background-color: #323232;
+}
+
+body.dark-mode .navbar {
+  background-color: #0d0d0d !important;
+  border-bottom: 1px solid #404040;
+}
+
+body.dark-mode .navbar-brand {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .nav-link {
+  color: #b0b0b0 !important;
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
+  color: #e0e0e0 !important;
+}
+
+#darkModeToggle {
+  display: inline;
+  vertical-align: middle;
+  padding: 0.5rem 0.75rem !important;
+  line-height: 1;
+}
+
+body.dark-mode #darkModeToggle {
+  color: #e0e0e0;
+  transition: color 0.2s;
+}
+
+body.dark-mode #darkModeToggle:hover {
+  color: #4da6ff;
 }

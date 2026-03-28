@@ -1,1 +1,0 @@
-JS load order (players.html): utils.js → charts.js → players.js

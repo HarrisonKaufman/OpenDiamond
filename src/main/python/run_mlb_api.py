@@ -1,7 +1,6 @@
-"""Reads JSON from stdin, calls MLB API, writes JSON to stdout."""
 import json
 import sys
-from mlb_api import get_game, get_game_box_score, get_standings, get_team, get_player_stat_by_name_season, get_player_season_stats
+from mlb_api import get_game, get_game_box_score, get_standings, get_team, get_player_stat_by_name_season, get_player_season_stats, get_teams, get_team_data, get_team_years, get_team_history
 
 def validate_action(payload):
     action = payload.get("action")
@@ -10,7 +9,7 @@ def validate_action(payload):
     if not isinstance(action, str):
         return None, {"error": "Invalid action type - must be a string"}
 
-    valid_actions = ["game", "boxscore", "standings", "team", "player_stats", "player_season_stats"]
+    valid_actions = ["game", "boxscore", "standings", "team", "player_stats", "player_season_stats", "teams", "team_data", "team_years", "team_history"]
     if action not in valid_actions:
         return None, {"error": f"Invalid action '{action}'. Valid actions: {', '.join(valid_actions)}"}
 
@@ -125,6 +124,31 @@ try:
             print(json.dumps(error))
             sys.exit(1)
         result = get_player_season_stats(player_name)
+
+    elif action == "teams":
+        result = get_teams()
+
+    elif action == "team_data":
+        team_id, error = validate_team_id(payload)
+        if error:
+            print(json.dumps(error))
+            sys.exit(1)
+        season = payload.get("season")
+        result = get_team_data(team_id, season)
+
+    elif action == "team_years":
+        team_id, error = validate_team_id(payload)
+        if error:
+            print(json.dumps(error))
+            sys.exit(1)
+        result = get_team_years(team_id)
+
+    elif action == "team_history":
+        team_id, error = validate_team_id(payload)
+        if error:
+            print(json.dumps(error))
+            sys.exit(1)
+        result = get_team_history(team_id)
 
     print(json.dumps(result))
 

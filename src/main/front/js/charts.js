@@ -101,14 +101,14 @@ function renderPlayerCharts(position, seasons) {
   if (position === 'P') {
     setChartVisibility(BATTER_CHART_IDS, false);
     setChartVisibility(PITCHER_CHART_IDS, true);
-    document.getElementById('dashboard').offsetHeight; // force reflow
+    document.getElementById('dashboard').offsetHeight;
     initPitcherCharts();
     createERAChart(seasons);
     createWHIPChart(seasons);
   } else {
     setChartVisibility(BATTER_CHART_IDS, true);
     setChartVisibility(PITCHER_CHART_IDS, false);
-    document.getElementById('dashboard').offsetHeight; // force reflow
+    document.getElementById('dashboard').offsetHeight;
     initCharts();
     createHitsChart(seasons);
     createBattingAvgChart(seasons);
