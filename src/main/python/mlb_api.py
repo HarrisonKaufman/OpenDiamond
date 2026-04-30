@@ -287,9 +287,24 @@ def _calculate_team_pitching_stats(team_id: int, season: Optional[int] = None) -
         stats_data = _get_team_stat_from_group(team_id, 'pitching', season)
         
         if stats_data:
+            era = safe_float(stats_data.get('era', 0.0))
+            if era == 0.0:
+                earned_runs = safe_int(stats_data.get('earnedRuns', 0))
+                innings_pitched = safe_float(stats_data.get('inningsPitched', 0.0))
+                if innings_pitched > 0:
+                    era = (earned_runs * 9) / innings_pitched
+            
+            whip = safe_float(stats_data.get('whip', 0.0))
+            if whip == 0.0:
+                walks = safe_int(stats_data.get('baseOnBalls', 0))
+                hits = safe_int(stats_data.get('hits', 0))
+                innings_pitched = safe_float(stats_data.get('inningsPitched', 0.0))
+                if innings_pitched > 0:
+                    whip = (walks + hits) / innings_pitched
+            
             return {
-                'era': safe_float(stats_data.get('era', 0.0)),
-                'whip': safe_float(stats_data.get('whip', 0.0)),
+                'era': era,
+                'whip': whip,
                 'strikeOuts': safe_int(stats_data.get('strikeOuts', 0)),
                 'walks': safe_int(stats_data.get('baseOnBalls', 0)),
                 'hits': safe_int(stats_data.get('hits', 0)),
@@ -349,9 +364,32 @@ def get_team_data(team_id: int, season: Optional[int] = None) -> Dict[str, Any]:
             stats_data_hitting = _get_team_stat_from_group(team_id, 'hitting', season)
             
             if stats_data_pitching:
+                era = safe_float(stats_data_pitching.get('era'))
+                if not era or era == 0.0:
+                    earned_runs = safe_int(stats_data_pitching.get('earnedRuns', 0))
+                    innings_pitched = safe_float(stats_data_pitching.get('inningsPitched', 0.0))
+                    if innings_pitched > 0:
+                        era = (earned_runs * 9) / innings_pitched
+                    else:
+                        era = 0.0
+                else:
+                    era = safe_float(era)
+                
+                whip = safe_float(stats_data_pitching.get('whip'))
+                if not whip or whip == 0.0:
+                    walks = safe_int(stats_data_pitching.get('baseOnBalls', 0))
+                    hits = safe_int(stats_data_pitching.get('hits', 0))
+                    innings_pitched = safe_float(stats_data_pitching.get('inningsPitched', 0.0))
+                    if innings_pitched > 0:
+                        whip = (walks + hits) / innings_pitched
+                    else:
+                        whip = 0.0
+                else:
+                    whip = safe_float(whip)
+                
                 pitching_stats = {
-                    'era': safe_float(stats_data_pitching.get('era', 0.0)),
-                    'whip': safe_float(stats_data_pitching.get('whip', 0.0)),
+                    'era': era,
+                    'whip': whip,
                     'strikeOuts': safe_int(stats_data_pitching.get('strikeOuts', 0)),
                     'walks': safe_int(stats_data_pitching.get('baseOnBalls', 0)),
                     'hits': safe_int(stats_data_pitching.get('hits', 0)),
